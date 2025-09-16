@@ -3,7 +3,7 @@
 import csv
 
 input_file = 'merged_dataset.csv'
-output_file = 'deduplicated_dataset'
+output_file = 'deduplicated_dataset.csv'
 
 seen_invoice_numbers = set()
 
