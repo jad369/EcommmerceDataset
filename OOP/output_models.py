@@ -1,7 +1,5 @@
-#Output Models
-
 class ProductOutputModel:
-    """Output model for Product data"""
+    """Formats product data for output"""
     
     def __init__(self, product):
         self.stock_code = product.stock_code
@@ -17,43 +15,33 @@ class ProductOutputModel:
 
 
 class InvoiceOutputModel:
-    """Output model for Invoice data"""
+    """Formats invoice data for output"""
     
     def __init__(self, invoice):
         self.invoice_number = invoice.invoice_no
         self.invoice_date = invoice.invoice_date
-        self.main_product = invoice.main_product
-        self.main_quantity = invoice.main_quantity
         self.total_amount = round(invoice.get_invoice_total(), 2)
-        self.item_count = invoice.get_item_count()
-        self.total_quantity = invoice.get_total_quantity()
         self.items = invoice.get_items_with_subtotals()
     
     def to_dict(self):
-        converted_items = []
-        for item in self.items:
-            converted_item = {
-                'product': item['product'],
-                'quantity': item['quantity'],
-                'unit_price': round(item['unit_price'], 2),
-                'subtotal': round(item['subtotal'], 2)
-            }
-            converted_items.append(converted_item)
-        
         return {
             'invoice_number': self.invoice_number,
             'invoice_date': self.invoice_date,
-            'main_product': self.main_product,
-            'main_quantity': self.main_quantity,
             'total_amount': self.total_amount,
-            'item_count': self.item_count,
-            'total_quantity': self.total_quantity,
-            'items': converted_items
+            'items': [
+                {
+                    'product': item['product'],
+                    'quantity': item['quantity'],
+                    'unit_price': round(item['unit_price'], 2),
+                    'subtotal': round(item['subtotal'], 2)
+                }
+                for item in self.items
+            ]
         }
 
 
 class CustomerOutputModel:
-    """Output model for Customer data"""
+    """Formats customer data for output"""
     
     def __init__(self, customer):
         self.customer_id = customer.customer_id
@@ -69,15 +57,14 @@ class CustomerOutputModel:
 
 
 class CustomerSummaryOutputModel:
-    """Output model for all customers summary"""
+    """Formats a summary of all customers"""
     
     def __init__(self, customers_dict):
         self.total_customers = len(customers_dict)
-        
-        self.customers = []
-        for customer in customers_dict.values():
-            customer_output = CustomerOutputModel(customer)
-            self.customers.append(customer_output.to_dict())
+        self.customers = [
+            CustomerOutputModel(customer).to_dict() 
+            for customer in customers_dict.values()
+        ]
     
     def to_dict(self):
         return {
@@ -87,20 +74,16 @@ class CustomerSummaryOutputModel:
 
 
 class InvoiceSummaryOutputModel:
-    """Output model for all invoices summary"""
+    """Formats a summary of all invoices"""
     
     def __init__(self, invoices_dict):
         self.total_invoices = len(invoices_dict)
-        
-        total_revenue = 0
-        for invoice in invoices_dict.values():
-            total_revenue += invoice.get_invoice_total()
+        total_revenue = sum(invoice.get_invoice_total() for invoice in invoices_dict.values())
         self.total_revenue = round(total_revenue, 2)
-        
-        self.invoices = []
-        for invoice in invoices_dict.values():
-            invoice_output = InvoiceOutputModel(invoice)
-            self.invoices.append(invoice_output.to_dict())
+        self.invoices = [
+            InvoiceOutputModel(invoice).to_dict() 
+            for invoice in invoices_dict.values()
+        ]
     
     def to_dict(self):
         return {
@@ -111,15 +94,14 @@ class InvoiceSummaryOutputModel:
 
 
 class ProductCatalogOutputModel:
-    """Output model for product catalog"""
+    """Formats a catalog of all products"""
     
     def __init__(self, products_dict):
         self.total_products = len(products_dict)
-        
-        self.products = []
-        for product in products_dict.values():
-            product_output = ProductOutputModel(product)
-            self.products.append(product_output.to_dict())
+        self.products = [
+            ProductOutputModel(product).to_dict() 
+            for product in products_dict.values()
+        ]
     
     def to_dict(self):
         return {
@@ -129,7 +111,7 @@ class ProductCatalogOutputModel:
 
 
 class CustomersByCountryOutputModel:
-    """Output model for customers grouped by country"""
+    """Groups and formats customers by country"""
     
     def __init__(self, customers_dict):
         countries = {}
@@ -137,9 +119,7 @@ class CustomersByCountryOutputModel:
             country = customer.country
             if country not in countries:
                 countries[country] = []
-            
-            customer_output = CustomerOutputModel(customer)
-            countries[country].append(customer_output.to_dict())
+            countries[country].append(CustomerOutputModel(customer).to_dict())
         
         self.countries = countries
         self.total_countries = len(countries)

@@ -1,8 +1,3 @@
-"""Data analytics module"""
-
-from mappers import CustomerMapper
-
-
 class DataAnalytics:
     """Class for performing analytics on the data"""
     
@@ -10,6 +5,7 @@ class DataAnalytics:
         self.processor = processor
     
     def print_business_summary(self):
+        """Print overall business metrics"""
         print("\n" + "=" * 70)
         print("BUSINESS SUMMARY")
         print("=" * 70)
@@ -28,6 +24,7 @@ class DataAnalytics:
         print(f"📊 Average Order Value: ${avg_order:.2f}")
     
     def print_top_customers(self, limit=10):
+        """Print top customers by spending"""
         print("\n" + "=" * 70)
         print(f"TOP {limit} CUSTOMERS BY SPENDING")
         print("=" * 70)
@@ -38,6 +35,7 @@ class DataAnalytics:
             print(f"{i:2d}. Customer {customer.customer_id} ({customer.country}): ${customer.total_spent:,.2f}")
     
     def print_country_analysis(self):
+        """Print analysis of customers and revenue by country"""
         print("\n" + "=" * 70)
         print("CUSTOMERS BY COUNTRY")
         print("=" * 70)
@@ -73,6 +71,7 @@ class DataAnalytics:
             print(f"{i+1:2d}. {country:20s}: {data['count']:4d} customers, ${data['total_spent']:,.2f}")
     
     def print_high_value_invoices(self, threshold=1000, limit=10):
+        """Print high value invoices above a threshold"""
         print("\n" + "=" * 70)
         print(f"HIGH VALUE INVOICES (Over ${threshold:,.2f})")
         print("=" * 70)
@@ -87,6 +86,7 @@ class DataAnalytics:
             print(f"{i+1:2d}. Invoice {invoice.invoice_no}: ${invoice.total:,.2f} ({invoice.get_item_count()} items)")
     
     def search_and_display_products(self, search_term, limit=20):
+        """Search for and display products matching a search term"""
         print("\n" + "=" * 70)
         print(f"SEARCH RESULTS FOR: '{search_term}'")
         print("=" * 70)
@@ -107,24 +107,25 @@ class DataAnalytics:
             print("No products found")
     
     def print_sample_data(self):
+        """Print sample data from each entity type"""
         print("\n" + "=" * 70)
         print("SAMPLE DATA")
         print("=" * 70)
         
         if self.processor.products:
-            print("\n📦 Sample Product:")
+            print("\nSample Product:")
             products_list = list(self.processor.products.values())
             first_product = products_list[0]
             first_product.show()
         
         if self.processor.customers:
-            print("\n👤 Sample Customer:")
+            print("\nSample Customer:")
             customers_list = list(self.processor.customers.values())
             first_customer = customers_list[0]
             first_customer.show()
         
         if self.processor.invoices:
-            print("\n📄 Sample Invoice:")
+            print("\nSample Invoice:")
             invoices_list = list(self.processor.invoices.values())
             first_invoice = invoices_list[0]
             first_invoice.show()

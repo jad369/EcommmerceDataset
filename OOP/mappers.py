@@ -1,9 +1,11 @@
-"""Mapper classes for data conversion"""
-
-from models import Product, Invoice, Customer
-from output_models import ProductOutputModel, InvoiceOutputModel, CustomerOutputModel
-from output_models import ProductCatalogOutputModel, InvoiceSummaryOutputModel
-from output_models import CustomerSummaryOutputModel, CustomersByCountryOutputModel
+from product import Product
+from invoice import Invoice
+from customer import Customer
+from output_models import (
+    ProductOutputModel, InvoiceOutputModel, CustomerOutputModel,
+    ProductCatalogOutputModel, InvoiceSummaryOutputModel, 
+    CustomerSummaryOutputModel, CustomersByCountryOutputModel
+)
 
 
 class ProductMapper:
@@ -42,7 +44,7 @@ class InvoiceMapper:
         """Create an Invoice from a CSV row"""
         invoice_no = row[0]
         invoice_date = row[4]
-        return Invoice(invoice_no, invoice_date)
+        return Invoice(invoice_no, invoice_date, None, None)
     
     @staticmethod
     def add_item_from_csv_row(invoice, row):
