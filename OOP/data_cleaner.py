@@ -1,3 +1,22 @@
+"""
+Data Cleaner
+Object-oriented data cleaning pipeline using StringIO for efficient in-memory operations.
+
+Expected Input Files:
+  - 09_10_dataset.csv (December 2009 - November 2010 data)
+  - 10_11_dataset.csv (December 2010 - November 2011 data)
+
+Output File:
+  - final_dataset.csv (Merged and cleaned data)
+
+Cleaning Steps:
+  1. Merge the two CSV files
+  2. Filter out cancelled invoices (starting with 'C')
+  3. Remove year 2009 data
+  4. Remove rows with zero prices
+  5. Remove test stock codes (TEST001)
+"""
+
 import csv
 from io import StringIO
 
@@ -20,13 +39,13 @@ class DataCleaner:
         try:
             with open(filename, 'r', encoding='utf-8') as file:
                 self.current_data = file.read()
-            print(f"Loaded '{filename}' into memory")
+            print(f"✅ Loaded '{filename}' into memory")
             return True
         except FileNotFoundError:
-            print(f"Error: File '{filename}' not found")
+            print(f"❌ Error: File '{filename}' not found")
             return False
         except Exception as e:
-            print(f"Error loading file: {e}")
+            print(f"❌ Error loading file: {e}")
             return False
     
     def save_to_file(self, filename):
@@ -37,12 +56,15 @@ class DataCleaner:
             filename: Path where to save the file
         """
         try:
-            with open(filename, 'w', encoding='utf-8') as file:
-                file.write(self.current_data)
-            print(f"Saved data to '{filename}'")
+            # Remove any \r characters to prevent double line breaks
+            clean_data = self.current_data.replace('\r', '')
+            
+            with open(filename, 'w', encoding='utf-8', newline='') as file:
+                file.write(clean_data)
+            print(f"✅ Saved data to '{filename}'")
             return True
         except Exception as e:
-            print(f"Error saving file: {e}")
+            print(f"❌ Error saving file: {e}")
             return False
     
     def merge_files(self, file1, file2):
@@ -67,65 +89,23 @@ class DataCleaner:
             # Merge the data
             self.current_data = data1 + data2
             self.steps_completed.append("merge_files")
-            print(f"Merged '{file1}' and '{file2}' successfully")
+            print(f"✅ Merged '{file1}' and '{file2}' successfully")
             return True
             
         except FileNotFoundError as e:
-            print(f"Error: File not found - {e}")
+            print(f"❌ Error: File not found - {e}")
             return False
         except Exception as e:
-            print(f"Error merging files: {e}")
+            print(f"❌ Error merging files: {e}")
             return False
     
-    def deduplicate_invoices(self):
-        """
-        Remove duplicate invoice numbers.
-        Keeps the first occurrence of each invoice number.
-        """
-        if self.current_data is None:
-            print("No data loaded. Load a file first.")
-            return False
-        
-        # Create StringIO objects for reading and writing
-        input_stream = StringIO(self.current_data)
-        output_stream = StringIO()
-        
-        csv_reader = csv.reader(input_stream)
-        csv_writer = csv.writer(output_stream)
-        
-        seen_invoice_numbers = set()
-        
-        # Read header
-        header = next(csv_reader)
-        csv_writer.writerow(header)
-        
-        # Process rows
-        rows_kept = 0
-        rows_removed = 0
-        for row in csv_reader:
-            invoice_number = row[0]
-            
-            if invoice_number not in seen_invoice_numbers:
-                csv_writer.writerow(row)
-                seen_invoice_numbers.add(invoice_number)
-                rows_kept += 1
-            else:
-                rows_removed += 1
-        
-        # Update current data
-        self.current_data = output_stream.getvalue()
-        self.steps_completed.append("deduplicate_invoices")
-        
-        print(f"Removed {rows_removed} duplicate invoices")
-        print(f"   Kept {rows_kept} unique invoices")
-        return True
     
     def filter_cancelled_invoices(self):
         """
         Remove invoices starting with 'C' (cancelled orders).
         """
         if self.current_data is None:
-            print("No data loaded. Load a file first.")
+            print("❌ No data loaded. Load a file first.")
             return False
         
         # Create StringIO objects
@@ -155,7 +135,7 @@ class DataCleaner:
         self.current_data = output_stream.getvalue()
         self.steps_completed.append("filter_cancelled_invoices")
         
-        print(f"Removed {rows_removed} cancelled invoices")
+        print(f"✅ Removed {rows_removed} cancelled invoices")
         print(f"   Kept {rows_kept} valid invoices")
         return True
     
@@ -167,7 +147,7 @@ class DataCleaner:
             year_to_exclude: Year to filter out (e.g., "2009")
         """
         if self.current_data is None:
-            print("No data loaded. Load a file first.")
+            print("❌ No data loaded. Load a file first.")
             return False
         
         # Create StringIO objects
@@ -197,7 +177,7 @@ class DataCleaner:
         self.current_data = output_stream.getvalue()
         self.steps_completed.append(f"filter_year_{year_to_exclude}")
         
-        print(f"Removed {rows_removed} rows from year {year_to_exclude}")
+        print(f"✅ Removed {rows_removed} rows from year {year_to_exclude}")
         print(f"   Kept {rows_kept} rows")
         return True
     
@@ -206,7 +186,7 @@ class DataCleaner:
         Remove rows with unit price of 0.
         """
         if self.current_data is None:
-            print("No data loaded. Load a file first.")
+            print("❌ No data loaded. Load a file first.")
             return False
         
         # Create StringIO objects
@@ -236,7 +216,7 @@ class DataCleaner:
         self.current_data = output_stream.getvalue()
         self.steps_completed.append("filter_zero_prices")
         
-        print(f" Removed {rows_removed} rows with zero price")
+        print(f"✅ Removed {rows_removed} rows with zero price")
         print(f"   Kept {rows_kept} rows")
         return True
     
@@ -248,7 +228,7 @@ class DataCleaner:
             stock_code_to_exclude: Stock code to filter out (e.g., "TEST001")
         """
         if self.current_data is None:
-            print(" No data loaded. Load a file first.")
+            print("❌ No data loaded. Load a file first.")
             return False
         
         # Create StringIO objects
@@ -278,7 +258,7 @@ class DataCleaner:
         self.current_data = output_stream.getvalue()
         self.steps_completed.append(f"filter_stock_code_{stock_code_to_exclude}")
         
-        print(f" Removed {rows_removed} rows with stock code '{stock_code_to_exclude}'")
+        print(f"✅ Removed {rows_removed} rows with stock code '{stock_code_to_exclude}'")
         print(f"   Kept {rows_kept} rows")
         return True
     
@@ -329,33 +309,28 @@ class DataCleaner:
         if not self.merge_files(file1, file2):
             return False
         
-        # Step 2: Deduplicate
-        print("\nStep 2: Removing duplicate invoices...")
-        if not self.deduplicate_invoices():
-            return False
-        
-        # Step 3: Filter cancelled invoices
-        print("\nStep 3: Filtering cancelled invoices...")
+        # Step 2: Filter cancelled invoices
+        print("\nStep 2: Filtering cancelled invoices...")
         if not self.filter_cancelled_invoices():
             return False
         
-        # Step 4: Filter year 2009
-        print("\nStep 4: Removing 2009 data...")
+        # Step 3: Filter year 2009
+        print("\nStep 3: Removing 2009 data...")
         if not self.filter_by_year("2009"):
             return False
         
-        # Step 5: Filter zero prices
-        print("\nStep 5: Removing zero price rows...")
+        # Step 4: Filter zero prices
+        print("\nStep 4: Removing zero price rows...")
         if not self.filter_zero_prices():
             return False
         
-        # Step 6: Filter test stock codes
-        print("\nStep 6: Removing test stock codes...")
+        # Step 5: Filter test stock codes
+        print("\nStep 5: Removing test stock codes...")
         if not self.filter_by_stock_code("TEST001"):
             return False
         
         # Save final result only
-        print("\nStep 7: Saving final dataset...")
+        print("\nStep 6: Saving final dataset...")
         if not self.save_to_file(output_file):
             return False
         
@@ -364,7 +339,7 @@ class DataCleaner:
         
         print("=" * 70)
         print("DATA CLEANING PIPELINE COMPLETED!")
-        print(f" Clean dataset saved as: '{output_file}'")
+        print(f"✅ Clean dataset saved as: '{output_file}'")
         print("=" * 70 + "\n")
         
         return True
