@@ -33,7 +33,9 @@ class DataAnalytics:
 
         for i, customer in enumerate(top_customers, 1):
             print(
-                f"{i:2d}. Customer {customer.customer_id} ({customer.country}): ${customer.total_spent:,.2f}"
+                f"{i:2d}. Customer {customer.customer_id} "
+                f"({customer.country}): "
+                f"${customer.total_spent:,.2f}"
             )
 
     def print_country_analysis(self):
@@ -52,23 +54,28 @@ class DataAnalytics:
             total = 0
             for customer in customers:
                 total += customer["total_spent"]
-
-            country_spending[country] = {"count": len(customers), "total_spent": total}
+            country_spending[country] = {  # ← Now INSIDE the loop! ✅
+                "count": len(customers),
+                "total_spent": total
+            }
 
         def get_country_total(country_item):
-            country_name = country_item[0]
             data = country_item[1]
             return data["total_spent"]
 
         country_items = list(country_spending.items())
-        sorted_countries = sorted(country_items, key=get_country_total, reverse=True)
+        sorted_countries = sorted(
+            country_items, key=get_country_total, reverse=True
+            )
 
         print("\nTop 10 Countries by Revenue:")
         for i in range(min(10, len(sorted_countries))):
             country = sorted_countries[i][0]
             data = sorted_countries[i][1]
             print(
-                f"{i+1:2d}. {country:20s}: {data['count']:4d} customers, ${data['total_spent']:,.2f}"
+                f"{i+1:2d}. {country:20s}: "
+                f"{data['count']:4d} customers, "
+                f"${data['total_spent']:,.2f}"
             )
 
     def print_high_value_invoices(self, threshold=1000, limit=10):
@@ -85,7 +92,9 @@ class DataAnalytics:
         for i in range(max_to_show):
             invoice = high_value[i]
             print(
-                f"{i+1:2d}. Invoice {invoice.invoice_no}: ${invoice.total:,.2f} ({invoice.get_item_count()} items)"
+                f"{i+1:2d}. Invoice {invoice.invoice_no}: "
+                f"${invoice.total:,.2f} "
+                f"({invoice.get_item_count()} items)"
             )
 
     def search_and_display_products(self, search_term, limit=20):
@@ -103,7 +112,9 @@ class DataAnalytics:
             for i in range(max_to_show):
                 product = results[i]
                 print(
-                    f"{i+1:2d}. {product.stock_code}: {product.description} - ${product.unit_price:.2f}"
+                    f"{i+1:2d}. {product.stock_code}: "
+                    f"{product.description} - "
+                    f"${product.unit_price:.2f}"
                 )
 
             if len(results) > limit:
