@@ -1,6 +1,5 @@
 import csv
 from collections import defaultdict
-from io import StringIO
 
 
 class ReportsGenerator:
@@ -15,7 +14,9 @@ class ReportsGenerator:
         """
         self.processor = processor
 
-    def generate_monthly_sales_2010(self, output_file="monthly_sales_2010.csv"):
+    def generate_monthly_sales_2010(
+        self, output_file="monthly_sales_2010.csv"
+    ):
         """
         Generate monthly sales report for 2010.
         Output: month, total_quantity, revenue
@@ -29,7 +30,7 @@ class ReportsGenerator:
         for invoice in self.processor.invoices.values():
             # Check if invoice is from 2010
             if "2010" in invoice.invoice_date:
-                # Extract month from date (assuming format like "1/5/2010 8:00")
+                # Extract month from date
                 date_parts = invoice.invoice_date.split("/")
                 month = int(date_parts[0])  # Month is first part
 
@@ -46,12 +47,18 @@ class ReportsGenerator:
             # Sort by month
             for month in sorted(monthly_data.keys()):
                 data = monthly_data[month]
-                writer.writerow([month, data["quantity"], round(data["revenue"], 2)])
+                writer.writerow([
+                    month,
+                    data["quantity"],
+                    round(data["revenue"], 2)
+                ])
 
         print(f"Generated: {output_file}")
         return True
 
-    def generate_monthly_sales_2011(self, output_file="monthly_sales_2011.csv"):
+    def generate_monthly_sales_2011(
+        self, output_file="monthly_sales_2011.csv"
+    ):
         """
         Generate monthly sales report for 2011.
         Output: month, total_quantity, revenue
@@ -82,7 +89,11 @@ class ReportsGenerator:
             # Sort by month
             for month in sorted(monthly_data.keys()):
                 data = monthly_data[month]
-                writer.writerow([month, data["quantity"], round(data["revenue"], 2)])
+                writer.writerow([
+                    month,
+                    data["quantity"],
+                    round(data["revenue"], 2)
+                ])
 
         print(f"Generated: {output_file}")
         return True
@@ -132,7 +143,9 @@ class ReportsGenerator:
         print(f" Generated: {output_file}")
         return True
 
-    def generate_country_sales_2010(self, output_file="country_sales_2010.csv"):
+    def generate_country_sales_2010(
+        self, output_file="country_sales_2010.csv"
+    ):
         """
         Generate country sales report for 2010.
         Output: country, total_quantity, revenue
@@ -161,12 +174,18 @@ class ReportsGenerator:
             # Sort by country name
             for country in sorted(country_data.keys()):
                 data = country_data[country]
-                writer.writerow([country, data["quantity"], round(data["revenue"], 2)])
+                writer.writerow([
+                    country,
+                    data["quantity"],
+                    round(data["revenue"], 2)
+                ])
 
         print(f"Generated: {output_file}")
         return True
 
-    def generate_country_sales_2011(self, output_file="country_sales_2011.csv"):
+    def generate_country_sales_2011(
+        self, output_file="country_sales_2011.csv"
+    ):
         """
         Generate country sales report for 2011.
         Output: country, total_quantity, revenue
@@ -195,7 +214,11 @@ class ReportsGenerator:
             # Sort by country name
             for country in sorted(country_data.keys()):
                 data = country_data[country]
-                writer.writerow([country, data["quantity"], round(data["revenue"], 2)])
+                writer.writerow([
+                    country,
+                    data["quantity"],
+                    round(data["revenue"], 2)
+                ])
 
         print(f"Generated: {output_file}")
         return True
